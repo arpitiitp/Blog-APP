@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
 
@@ -10,16 +10,20 @@ export const adminLogin = async (req, res) => {
       return res.json({ success: false, message: "Invalid Credentials" });
     }
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET); 
+    const token = jwt.sign({ email }, process.env.JWT_SECRET);
     res.json({ success: true, token });
-    
+
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 export const getAllBlogsAdmin = async (req, res) => {
   try {
-    const blogs = await Blog.find({}).sort({ createdAt: -1 });
+    let query = {};
+    if (req.role !== 'admin') {
+      query.author = req.userId;
+    }
+    const blogs = await Blog.find(query).sort({ createdAt: -1 });
     res.json({ success: true, blogs });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -35,10 +39,15 @@ export const getAllComments = async (req, res) => {
 };
 export const getDashboard = async (req, res) => {
   try {
-    const recentBlogs = await Blog.find({}).sort({ createdAt: -1 }).limit(5);
-    const blogs = await Blog.countDocuments();
-    const comments = await Comment.countDocuments();
-    const drafts = await Blog.countDocuments({ isPublished: false });
+    let query = {};
+    if (req.role !== 'admin') {
+      query.author = req.userId;
+    }
+
+    const recentBlogs = await Blog.find(query).sort({ createdAt: -1 }).limit(5);
+    const blogs = await Blog.countDocuments(query);
+    const comments = await Comment.countDocuments(); // Comments might need filtering too, but linking logic is tricky without comment-author link
+    const drafts = await Blog.countDocuments({ ...query, isPublished: false });
 
     const dashboardData = {
       blogs,

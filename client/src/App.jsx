@@ -8,6 +8,7 @@ import AddBlog from "./pages/admin/AddBlog"; // Assuming this component exists
 import ListBlog from "./pages/admin/ListBlog"; // Assuming this component exists
 import Comments from "./pages/admin/Comments"; // Assuming this component exists
 import Login from "./components/admin/Login"; // Assuming this component exists
+import Signup from "./components/admin/Signup";
 import "quill/dist/quill.snow.css"; // Styles for the rich text editor (e.g., React-Quill)
 import { Toaster } from "react-hot-toast"; // Component to display toast notifications
 import { useAppContext } from "./context/AppContext"; // Your custom context hook
@@ -19,7 +20,7 @@ const App = () => {
   // Destructure 'token' and 'loading' from the application context.
   // 'token' is used for authentication checks.
   // 'loading' indicates if the initial authentication check/data fetch is complete.
-  const { token, loading } = useAppContext(); 
+  const { token, loading } = useAppContext();
 
   // Display a loading indicator or null while the app is initializing
   // and determining the authentication status.
@@ -41,6 +42,7 @@ const App = () => {
         {/* Public Routes */}
         <Route path="/" element={<Home />} /> {/* Home page */}
         <Route path="/blog/:id" element={<Blog />} /> {/* Individual blog post page */}
+        <Route path="/signup" element={<Signup />} />
 
         {/* Admin/Protected Routes */}
         {/* The /admin path conditionally renders Layout (if authenticated) or Login (if not).
