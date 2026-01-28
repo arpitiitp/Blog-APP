@@ -42,6 +42,7 @@ export const addBlog = async (req, res) => {
       category,
       image,
       isPublished,
+      author: req.userId
     });
 
     res.json({ success: true, message: "Blog added successfully" });

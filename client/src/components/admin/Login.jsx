@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast"; // Ensure react-hot-toast is installed: npm install react-hot-toast
@@ -16,7 +17,7 @@ const Login = () => {
     e.preventDefault(); // Prevent default form submission behavior (page reload)
     try {
       // Make a POST request to the admin login API endpoint
-      const { data } = await axios.post("/api/admin/login", {
+      const { data } = await axios.post("/api/auth/login", {
         email,
         password,
       });
@@ -110,6 +111,13 @@ const Login = () => {
             Login
           </button>
         </form>
+
+        <div className="mt-4 text-sm text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-purple-600 hover:underline">
+            Sign Up
+          </Link>
+        </div>
 
         <div className="mt-6">
           <div className="relative">
