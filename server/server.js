@@ -8,7 +8,10 @@ import blogRouter from './routes/blogRoutes.js';
 import authRouter from './routes/authRoutes.js';
 
 const app = express();
-// Connect to the database
+// Connect to the database inside the request handler or at top-level if supported
+// For Vercel, it's safer to ensure connection in route handlers or invoke it here but handle async nature
+// Since we are using top-level await (available in Node 14+ ESM), this is generally okay, 
+// but in Vercel it runs per lambda. The cached logic in db.js handles the re-use.
 await connectDB();
 
 // Middlewares
