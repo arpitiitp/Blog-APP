@@ -2,6 +2,8 @@
 
 A full-stack Blog Application built with the MERN stack (MongoDB, Express, React, Node.js). Features a modern UI, authentication (including Google OAuth), admin dashboard, image uploads, and AI integration.
 
+You can visit the live application here: **[Live Demo](https://blog-app-frontend-zeta-rust.vercel.app/)**
+
 ## 🚀 Features
 
 *   **Public Interface**:
