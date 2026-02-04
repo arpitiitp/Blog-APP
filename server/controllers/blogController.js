@@ -53,7 +53,23 @@ export const addBlog = async (req, res) => {
 
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({ isPublished: true });
+    const blogs = await Blog.aggregate([
+      { $match: { isPublished: true } },
+      { $sort: { createdAt: -1 } },
+      {
+        $project: {
+          title: 1,
+          subTitle: 1,
+          category: 1,
+          image: 1,
+          isPublished: 1,
+          author: 1,
+          createdAt: 1,
+          // Truncate description to 200 characters for better performance
+          description: { $substrCP: ["$description", 0, 200] }
+        }
+      }
+    ]);
     res.json({ success: true, blogs });
   } catch (error) {
     res.json({ success: false, message: error.message });
