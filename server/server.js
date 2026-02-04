@@ -2,7 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 
 import cors from 'cors';
-import connectDB from './configs/db.js'; // Assuming this path is correct based on the image
+import connectDB from './configs/db.js';
 import adminRouter from './routes/adminRoutes.js';
 import blogRouter from './routes/blogRoutes.js';
 import authRouter from './routes/authRoutes.js';
@@ -12,7 +12,16 @@ const app = express();
 // For Vercel, it's safer to ensure connection in route handlers or invoke it here but handle async nature
 // Since we are using top-level await (available in Node 14+ ESM), this is generally okay, 
 // but in Vercel it runs per lambda. The cached logic in db.js handles the re-use.
-await connectDB();
+// Middleware to ensure database connection before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection error:", err);
+    res.status(500).json({ success: false, message: "Database connection failed" });
+  }
+});
 
 // Middlewares
 app.use(cors());

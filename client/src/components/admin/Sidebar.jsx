@@ -1,62 +1,58 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { assets } from "../../assets/assets"; // ✅ Fix 1: import added
+import { assets } from "../../assets/assets";
 
 const Sidebar = () => {
   return (
-    <div className="w-60 h-full border-r border-gray-200 bg-white p-4">
-      {" "}
-      {/* ✅ Fix 2: width and style */}
-      <div className="flex flex-col gap-2">
-        <NavLink
-          end
-          to="/admin"
-          className={({ isActive }) =>
-            `flex items-center gap-3 py-3.5 px-3 md:px-5 rounded-md cursor-pointer transition ${isActive ? "bg-primary/10 border-r-4 border-primary" : ""
-            }`
-          }
-        >
-          <img src={assets.home_icon} alt="home" className="min-w-4 w-5" />
-          <p className="hidden md:inline-block">Dashboard</p>
-        </NavLink>
-        <NavLink
-          to="/admin/addBlog"
-          className={({ isActive }) =>
-            `flex items-center gap-3 py-3.5 px-3 md:px-5 rounded-md cursor-pointer transition ${isActive ? "bg-primary/10 border-r-4 border-primary" : ""
-            }`
-          }
-        >
-          <img src={assets.add_icon} alt="home" className="min-w-4 w-5" />
-          <p className="hidden md:inline-block">Add blogs</p>
-        </NavLink>
+    <div className='w-64 h-full border-r border-gray-200 bg-white py-6 flex flex-col'>
+      <div className='px-6 mb-8'>
+        {/* Optional: Add Logo here if needed, or keep it clean */}
+      </div>
 
-        <div className="flex flex-col gap-2">
-
+      <div className='flex flex-col gap-2 px-4'>
+        {[
+          { to: '/admin', icon: assets.home_icon, label: 'Dashboard' },
+          { to: '/admin/addBlog', icon: assets.add_icon, label: 'Add Blog' },
+          { to: '/admin/comments', icon: assets.email_icon, label: 'Comments' },
+        ].map((item) => (
           <NavLink
-            to={"/admin/comments"}
+            key={item.to}
+            to={item.to}
+            end={item.to === '/admin'}
             className={({ isActive }) =>
-              isActive
-                ? "flex items-center gap-3 font-medium px-3 py-2 bg-white shadow-[-5px_5px_0px_#000000] border border-black"
-                : "flex items-center gap-3 font-medium px-3 py-2 bg-white border border-white hover:border-black transition-all"
+              `flex items-center gap-3 py-3 px-4 rounded-lg transition-all duration-200 group ${isActive
+                ? 'bg-primary text-white shadow-md shadow-primary/30'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`
             }
           >
-            <img src={assets.email_icon} alt="" width={28} />
-            <p className="max-sm:hidden">Comments</p>
+            {/* Invert icon color for active state if they are black SVG icons, or use CSS filters. 
+               Assuming icons are images, we might use brightness-0 invert for white text if needed, 
+               or simply rely on the background. 
+               For now, keeping it simple but creating a cleaner layout. 
+           */}
+            <img
+              src={item.icon}
+              alt={item.label}
+              className={`w-5 h-5 object-contain transition-all ${
+                // Optional: Add filter class here if you need to change icon color on active
+                ''
+                }`}
+            />
+            <p className='font-medium'>{item.label}</p>
           </NavLink>
-        </div>
-
+        ))}
       </div>
 
-      <div className="mt-auto mb-4 w-full px-4 sm:ml-6 ml-4">
+      <div className='mt-auto px-4 mb-6'>
         <NavLink
-          to={"/"}
-          className="flex items-center gap-3 font-medium px-3 py-2 bg-gray-100 border border-gray-300 hover:bg-gray-200 transition-all rounded"
+          to='/'
+          className='flex items-center gap-3 py-3 px-4 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all border border-gray-200 hover:border-gray-300'
         >
-          {/* You might want an icon here, using 'assets.arrow' or similar if appropriate, or just text */}
-          <p className="max-sm:hidden">View Website</p>
+          <p className='font-medium'>View Website</p>
         </NavLink>
       </div>
-    </div >
+    </div>
   );
 };
 
