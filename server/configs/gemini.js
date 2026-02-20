@@ -1,15 +1,16 @@
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 
-// The client gets the API key from the environment variable `GEMINI_API_KEY`.
-const ai = new GoogleGenAI({ apikey: process.env.GEMINI_API_KEY });
+const client = new OpenAI({
+  baseURL: "https://models.inference.ai.azure.com",
+  apiKey: process.env.GITHUB_MODELS_KEY,
+});
 
 async function main(prompt) {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: prompt }],
   });
-  return response.text;
+  return response.choices[0].message.content;
 }
 
 export default main;
-
