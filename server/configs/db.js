@@ -16,6 +16,7 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false, // Disable buffering to fail fast if no connection
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     };
 
     console.log("Creating new database connection");

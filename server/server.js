@@ -12,6 +12,10 @@ const app = express();
 // For Vercel, it's safer to ensure connection in route handlers or invoke it here but handle async nature
 // Since we are using top-level await (available in Node 14+ ESM), this is generally okay, 
 // but in Vercel it runs per lambda. The cached logic in db.js handles the re-use.
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
 // Middleware to ensure database connection before handling requests
 app.use(async (req, res, next) => {
   try {
@@ -22,10 +26,6 @@ app.use(async (req, res, next) => {
     res.status(500).json({ success: false, message: "Database connection failed" });
   }
 });
-
-// Middlewares
-app.use(cors());
-app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => res.send("API is Working"));
