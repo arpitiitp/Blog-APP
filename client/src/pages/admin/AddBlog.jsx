@@ -45,6 +45,11 @@ const AddBlog = () => {
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
+
+      if (!image) {
+        return toast.error("Please upload a thumbnail image");
+      }
+
       setIsAdding(true);
 
       const blog = {
@@ -103,7 +108,6 @@ const AddBlog = () => {
             type="file"
             id="image"
             hidden
-            required
           />
         </label>
 
