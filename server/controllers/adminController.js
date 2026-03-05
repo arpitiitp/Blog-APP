@@ -13,13 +13,7 @@ export const adminLogin = async (req, res) => {
 
     const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET);
 
-    // Check if the admin is registered in the database to fetch their real profile name/image
-    let adminUser = await User.findOne({ email });
-    if (adminUser) {
-      res.json({ success: true, token, user: { _id: adminUser._id, name: adminUser.name, email: adminUser.email, role: 'admin', image: adminUser.image } });
-    } else {
-      res.json({ success: true, token, user: { email, name: "System Admin", role: "admin" } });
-    }
+    res.json({ success: true, token, user: { email, name: "System Admin", role: "admin", image: "" } });
 
   } catch (error) {
     res.json({ success: false, message: error.message });

@@ -46,7 +46,9 @@ export const addBlog = async (req, res) => {
       author: req.userId
     });
 
-    await User.findByIdAndUpdate(req.userId, { $push: { blogs: blog._id } });
+    if (req.userId) {
+      await User.findByIdAndUpdate(req.userId, { $push: { blogs: blog._id } });
+    }
 
     res.json({ success: true, message: "Blog added successfully" });
   } catch (error) {

@@ -103,6 +103,11 @@ export const getMe = async (req, res) => {
         if (!token) return res.json({ success: false, message: "Not authenticated" });
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // If it's the hardcoded admin, return mock profile immediately without DB query
+        if (decoded.role === 'admin' && decoded.email === process.env.ADMIN_EMAIL) {
+            return res.json({ success: true, user: { email: decoded.email, name: "System Admin", role: "admin", image: "" } });
+        }
+
         const user = await User.findById(decoded.userId).select('name email role image');
 
         if (!user) return res.json({ success: false, message: "User not found" });
