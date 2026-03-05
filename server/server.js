@@ -16,16 +16,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Middleware to ensure database connection before handling requests
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (err) {
-    console.error("Database connection error:", err);
-    res.status(500).json({ success: false, message: "Database connection failed" });
-  }
-});
+// Initialize Database Connection
+await connectDB();
 
 // Routes
 app.get('/', (req, res) => res.send("API is Working"));
