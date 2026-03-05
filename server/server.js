@@ -8,13 +8,25 @@ import blogRouter from './routes/blogRoutes.js';
 import authRouter from './routes/authRoutes.js';
 
 const app = express();
+app.use(express.json());
 // Connect to the database inside the request handler or at top-level if supported
 // For Vercel, it's safer to ensure connection in route handlers or invoke it here but handle async nature
 // Since we are using top-level await (available in Node 14+ ESM), this is generally okay, 
 // but in Vercel it runs per lambda. The cached logic in db.js handles the re-use.
 // Middlewares
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = [
+  'https://blog-app-frontend-zeta-rust.vercel.app',
+  'http://localhost:5173',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 
 // Initialize Database Connection
 await connectDB();
