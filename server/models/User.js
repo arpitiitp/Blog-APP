@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, unique: true, sparse: true },
   password: { type: String },
   role: { type: String, default: "user" },
+  blogs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'blog' }],
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
   blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blog', required: true },
-  name: { type: String, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   content: { type: String, required: true },
   isApproved: { type: Boolean, default: false },
 }, { timestamps: true });

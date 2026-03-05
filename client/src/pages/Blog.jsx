@@ -10,11 +10,10 @@ import toast from "react-hot-toast";
 
 const Blog = () => {
   const { id } = useParams();
-  const { axios } = useAppContext();
+  const { axios, userData, token } = useAppContext();
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
-  const [name, setName] = useState(""); // Correctly declared 'name'
-  const [content, setContent] = useState(""); // Correctly declared 'content'
+  const [content, setContent] = useState("");
 
   // Fetch blog by ID
   const fetchBlogData = async () => {
@@ -44,13 +43,13 @@ const Blog = () => {
     try {
       const { data: addCommentData } = await axios.post("/api/blog/add-comment", { // Renamed 'data' to 'addCommentData'
         blog: id,
-        name, // Use 'name' from state
-        content, // Use 'content' from state
+        content,
+      }, {
+        headers: { Authorization: token } // ensure auth token is sent if not already defaulted
       });
       if (addCommentData.success) {
         toast.success(addCommentData.message);
-        setName(""); // Reset 'name'
-        setContent(""); // Reset 'content'
+        setContent("");
         fetchComments(); // Re-fetch comments to show the new one
       } else {
         toast.error(addCommentData.message);
@@ -102,27 +101,27 @@ const Blog = () => {
       {/* Comments Section */}
       <div className="mx-5 md:mx-auto max-w-3xl mt-14 mb-10">
         <p className="font-semibold mb-4">Comments: {comments.length}</p>
-        <div className="flex flex-col gap-4">
+        <div className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide">
           {comments.length > 0 ? (
             comments.map((item, idx) => (
               <div
-                key={idx} // Using index as key is okay if items don't change order/get added/removed frequently
-                className="bg-primary/2 border border-primary/5 p-4 rounded text-gray-600"
+                key={idx}
+                className="bg-primary/2 border border-primary/5 p-4 rounded-xl text-gray-600 min-w-[280px] max-w-[320px] snap-center shrink-0 shadow-sm"
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <img src={assets.user_icon} alt="" className="w-6" />
-                  <p className="font-medium">{item.name}</p>
+                <div className="flex items-center gap-3 mb-3">
+                  <img src={item.author?.image || assets.user_icon} alt="" className="w-8 h-8 rounded-full object-cover" />
+                  <p className="font-medium text-gray-800">{item.author?.name || 'Unknown User'}</p>
                 </div>
-                <div className="ml-8 grid grid-cols-[1fr_auto] gap-4 text-sm">
-                  <p>{item.content}</p>
-                  <span className="whitespace-nowrap text-xs text-gray-500">
+                <div className="flex flex-col gap-2 text-sm">
+                  <p className="line-clamp-3 leading-relaxed">{item.content}</p>
+                  <span className="text-xs text-gray-400 mt-2 block">
                     {Moment(item.createdAt).fromNow()}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center">No comments yet. Be the first to comment!</p>
+            <p className="text-gray-500 text-center w-full">No comments yet. Be the first to comment!</p>
           )}
         </div>
       </div>
@@ -130,32 +129,31 @@ const Blog = () => {
       {/* Add Comment Form */}
       <div className="max-w-3xl mx-auto mb-20">
         <p className="font-semibold mb-4">Add your comment</p>
-        <form
-          onSubmit={addComment}
-          className="flex flex-col items-start gap-4 max-w-lg"
-        >
-          <input
-            type="text"
-            placeholder="Name"
-            required
-            value={name} // Corrected: use 'name' state
-            onChange={(e) => setName(e.target.value)} // Corrected: update 'name' state
-            className="w-full p-2 border border-gray-300 rounded outline-none"
-          />
-          <textarea
-            placeholder="Comment"
-            required
-            value={content} // Corrected: use 'content' state
-            onChange={(e) => setContent(e.target.value)} // Corrected: update 'content' state
-            className="w-full p-2 border border-gray-300 rounded outline-none h-48"
-          />
-          <button
-            type="submit"
-            className="bg-primary text-white rounded p-2 px-8 hover:scale-102 transition-all cursor-pointer"
+        {token ? (
+          <form
+            onSubmit={addComment}
+            className="flex flex-col items-start gap-4 max-w-lg"
           >
-            Submit
-          </button>
-        </form>
+            <textarea
+              placeholder="Write your beautiful comment here..."
+              required
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none min-h-[120px] focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
+            />
+            <button
+              type="submit"
+              className="bg-primary text-white font-medium rounded-full py-2.5 px-8 hover:bg-primary/90 hover:shadow-lg transition-all cursor-pointer"
+            >
+              Post Comment
+            </button>
+          </form>
+        ) : (
+          <div className="bg-gray-50 border border-gray-100 p-6 rounded-xl text-center">
+            <p className="text-gray-600 mb-4">Please log in to share your thoughts.</p>
+            <a href="/dashboard" className="inline-block bg-primary text-white font-medium rounded-full py-2 px-6 hover:bg-primary/90 transition-all">Go to Login</a>
+          </div>
+        )}
 
         {/* Share Buttons */}
         <div className="my-24 max-w-3xl mx-auto">

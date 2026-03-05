@@ -26,9 +26,8 @@ const BlogList = () => {
           <div key={item} className="relative">
             <button
               onClick={() => setMenu(item)}
-              className={`cursor-pointer text-gray-500 ${
-                menu === item && "text-white px-4 pt-0.5"
-              }`}
+              className={`cursor-pointer text-gray-500 ${menu === item && "text-white px-4 pt-0.5"
+                }`}
             >
               {item}
               {menu === item && (
@@ -43,11 +42,14 @@ const BlogList = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40">
+      {/* Horizontal Slider Layout */}
+      <div className="flex overflow-x-auto gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40 pb-8 snap-x snap-mandatory hide-scroll">
         {filteredBlogs()
           .filter((blog) => (menu === "All" ? true : blog.category === menu))
           .map((blog) => (
-            <BlogCard key={blog._id} blog={blog} />
+            <div key={blog._id} className="min-w-[300px] sm:min-w-[320px] max-w-[320px] shrink-0 snap-start flex-1">
+              <BlogCard blog={blog} />
+            </div>
           ))}
       </div>
     </div>

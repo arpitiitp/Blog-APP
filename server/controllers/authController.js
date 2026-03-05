@@ -59,7 +59,7 @@ export const register = async (req, res) => {
 
         const token = jwt.sign({ userId: user._id, email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ success: true, token, user: { name: user.name, email: user.email, role: user.role } });
+        res.json({ success: true, token, user: { _id: user._id, name: user.name, email: user.email, role: user.role, image: user.image } });
 
     } catch (error) {
         res.json({ success: false, message: error.message });
@@ -91,9 +91,29 @@ export const login = async (req, res) => {
 
         const token = jwt.sign({ userId: user._id, email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ success: true, token, user: { name: user.name, email: user.email, role: user.role } });
+        res.json({ success: true, token, user: { _id: user._id, name: user.name, email: user.email, role: user.role, image: user.image } });
 
     } catch (error) {
         res.json({ success: false, message: error.message });
     }
+};
+export const getMe = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        if (!token) return res.json({ success: false, message: "Not authenticated" });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId).select('name email role image');
+
+        if (!user) return res.json({ success: false, message: "User not found" });
+
+        res.json({ success: true, user });
+    } catch (error) {
+        res.json({ success: false, message: "Invalid or expired token" });
+    }
+};
+
+export const logoutUser = (req, res) => {
+    // JWT is stateless — actual cleanup happens on the client.
+    res.json({ success: true, message: "Logged out" });
 };

@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 const Signup = () => {
-    const { axios, setToken } = useAppContext();
+    const { axios, saveAuth } = useAppContext();
     const navigate = useNavigate();
 
     const [name, setName] = useState("");
@@ -21,10 +21,8 @@ const Signup = () => {
             });
 
             if (data.success) {
-                setToken(data.token);
-                localStorage.setItem("token", data.token);
-                axios.defaults.headers.common["Authorization"] = data.token;
-                navigate('/admin/dashboard');
+                saveAuth(data.token, data.user);
+                navigate('/dashboard');
                 toast.success("Account created successfully!");
             } else {
                 toast.error(data.message);
@@ -38,7 +36,7 @@ const Signup = () => {
         <div className="min-h-screen flex items-center justify-center bg-white px-4">
             <div className="w-full max-w-sm bg-white border border-purple-200 rounded-2xl shadow-lg p-8 text-center">
                 <h2 className="text-2xl font-bold mb-1">
-                    <span className="text-purple-600">Admin</span> Signup
+                    <span className="text-purple-600">Signup</span>
                 </h2>
                 <p className="text-gray-600 mb-6">
                     Create an account to access the panel
@@ -86,9 +84,9 @@ const Signup = () => {
                     </button>
                 </form>
                 <div className="mt-4 text-sm text-gray-600">
-                    Already have an account?{" "}
-                    <Link to="/admin" className="text-purple-600 hover:underline">
-                        Login
+                    <p className="text-gray-600">Already have an account?</p>
+                    <Link to="/dashboard" className="text-purple-600 hover:underline">
+                        Login here
                     </Link>
                 </div>
             </div>

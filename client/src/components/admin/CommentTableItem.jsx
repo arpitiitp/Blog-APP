@@ -54,7 +54,7 @@ const CommentTableItem = ({ comment, fetchComments }) => {
         {comment.blog?.title} {/* Use optional chaining in case blog is null/undefined */}
         <br />
         <br />
-        <b className="font-medium text-gray-600">Name</b> : {comment.name}
+        <b className="font-medium text-gray-600">Name</b> : {comment.author?.name || 'Unknown'}
         <br />
         <b className="font-medium text-gray-600">Comment</b> : {comment.content}
       </td>

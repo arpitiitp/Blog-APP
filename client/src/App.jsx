@@ -45,13 +45,11 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
 
         {/* Admin/Protected Routes */}
-        {/* The /admin path conditionally renders Layout (if authenticated) or Login (if not).
-            All nested routes within this Route are relative to "/admin". */}
-        <Route path="/admin" element={token ? <Layout /> : <Login />}>
-          {/* Index route for /admin: Renders Dashboard when the path is exactly "/admin" */}
+        {/* The /dashboard path conditionally renders Layout (if authenticated) or Login (if not).
+            All nested routes within this Route are relative to "/dashboard". */}
+        <Route path="/dashboard" element={token ? <Layout /> : <Login />}>
+          {/* Index route for /dashboard: Renders Dashboard when the path is exactly "/dashboard" */}
           <Route index element={<Dashboard />} />
-          {/* NEW: Explicit route for /admin/dashboard to match navigation */}
-          <Route path="dashboard" element={<Dashboard />} />
           {/* Child routes for admin functionalities */}
           <Route path="addBlog" element={<AddBlog />} />
           <Route path="listBlog" element={<ListBlog />} />

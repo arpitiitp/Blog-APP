@@ -1,8 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../../assets/assets";
+import { useAppContext } from "../../context/AppContext";
 
 const Sidebar = () => {
+  const { userData } = useAppContext();
+  const isAdmin = userData?.role === 'admin';
   return (
     <div className='w-64 h-full border-r border-gray-200 bg-white py-6 flex flex-col'>
       <div className='px-6 mb-8'>
@@ -11,14 +14,15 @@ const Sidebar = () => {
 
       <div className='flex flex-col gap-2 px-4'>
         {[
-          { to: '/admin', icon: assets.home_icon, label: 'Dashboard' },
-          { to: '/admin/addBlog', icon: assets.add_icon, label: 'Add Blog' },
-          { to: '/admin/comments', icon: assets.email_icon, label: 'Comments' },
+          { to: '/dashboard', icon: assets.home_icon, label: isAdmin ? 'Admin Dashboard' : 'My Dashboard' },
+          { to: '/dashboard/addBlog', icon: assets.add_icon, label: 'Add Blog' },
+          { to: '/dashboard/listBlog', icon: assets.list_icon, label: isAdmin ? 'All Blogs' : 'My Blogs' },
+          { to: '/dashboard/comments', icon: assets.email_icon, label: isAdmin ? 'All Comments' : 'My Comments' },
         ].map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/admin'}
+            end={item.to === '/dashboard'}
             className={({ isActive }) =>
               `flex items-center gap-3 py-3 px-4 rounded-lg transition-all duration-200 group ${isActive
                 ? 'bg-primary text-white shadow-md shadow-primary/30'

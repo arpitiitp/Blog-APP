@@ -1,142 +1,139 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { GoogleLogin } from '@react-oauth/google';
-import { useAppContext } from "../../context/AppContext";
-import toast from "react-hot-toast"; // Ensure react-hot-toast is installed: npm install react-hot-toast
+import toast from "react-hot-toast";
+import { useLogin } from "../../hooks/useLogin";
 
 const Login = () => {
-  // Destructure necessary values from the AppContext
-  const { axios, setToken, navigate } = useAppContext();
-
-  // State variables for email and password input fields
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  // Handler for form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior (page reload)
-    try {
-      // Make a POST request to the admin login API endpoint
-      const { data } = await axios.post("/api/auth/login", {
-        email,
-        password,
-      });
-
-      // Check if the login was successful based on the 'success' property in the response data
-      if (data.success) {
-        // If successful, set the token in the application's state
-        setToken(data.token);
-        // Store the token in local storage for persistence across sessions
-        localStorage.setItem("token", data.token);
-        // Set the Authorization header for all subsequent Axios requests
-        axios.defaults.headers.common["Authorization"] = data.token;
-        // Optionally, navigate to the admin dashboard or another protected route
-        navigate('/admin/dashboard'); // Assuming you want to navigate after successful login
-        toast.success("Logged in successfully!"); // Show success toast
-      } else {
-        // If login was not successful, display an error message from the backend
-        toast.error(data.message);
-      }
-    } catch (error) {
-      // Catch any network errors or other exceptions during the API call
-      toast.error(error.message); // Display the error message
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (credentialResponse) => {
-    try {
-      const { data } = await axios.post("/api/auth/google", {
-        token: credentialResponse.credential,
-      });
-
-      if (data.success) {
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-        axios.defaults.headers.common["Authorization"] = data.token;
-        navigate('/admin/dashboard');
-        toast.success("Logged in with Google!");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error("Google Login Failed");
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loginType,
+    setLoginType,
+    handleLoginSubmit,
+    handleGoogleLoginSuccess
+  } = useLogin();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="w-full max-w-sm bg-white border border-purple-200 rounded-2xl shadow-lg p-8 text-center">
-        <h2 className="text-2xl font-bold mb-1">
-          <span className="text-purple-600">Admin</span> Login
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Enter your credentials to access the admin panel
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 px-4 py-12">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-10 p-8 border border-gray-100 overflow-hidden relative">
 
-        {/* Form for login */}
-        {/* Corrected: Changed onSubmitHandler to handleSubmit */}
-        <form onSubmit={handleSubmit} className="text-left space-y-5">
-          <div>
-            <label className="text-gray-700 font-medium block mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email} // Binds input value to email state
-              onChange={(e) => setEmail(e.target.value)} // Updates email state on change
-              placeholder="admin@example.com"
-              className="w-full border-b border-gray-300 focus:outline-none focus:border-purple-500 text-gray-800 placeholder-gray-400 py-2"
-              required // HTML5 validation for required field
-            />
+        {/* Decorative Background blob */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl opacity-50 z-0 pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-100 rounded-full blur-3xl opacity-50 z-0 pointer-events-none"></div>
+
+        <div className="relative z-10">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+              Welcome Back
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Please enter your details to sign in.
+            </p>
           </div>
 
-          <div>
-            <label className="text-gray-700 font-medium block mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password} // Binds input value to password state
-              onChange={(e) => setPassword(e.target.value)} // Updates password state on change
-              placeholder="••••••••"
-              className="w-full border-b border-gray-300 focus:outline-none focus:border-purple-500 text-gray-800 placeholder-gray-400 py-2"
-              required // HTML5 validation for required field
-            />
+          {/* Toggle Animation Container */}
+          <div className="flex relative bg-gray-100/80 p-1.5 rounded-2xl mb-8">
+            <div
+              className={`absolute top-1.5 bottom-1.5 w-[calc(50%-0.375rem)] bg-white rounded-xl shadow-sm transition-transform duration-300 ease-in-out ${loginType === 'admin' ? 'translate-x-full' : 'translate-x-0'
+                }`}
+            ></div>
+
+            <button
+              onClick={() => setLoginType('user')}
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-xl relative z-10 transition-colors duration-300 ${loginType === 'user' ? 'text-purple-700' : 'text-gray-500 hover:text-gray-700'
+                }`}
+            >
+              User Login
+            </button>
+            <button
+              onClick={() => setLoginType('admin')}
+              className={`flex-1 py-2.5 text-sm font-semibold rounded-xl relative z-10 transition-colors duration-300 ${loginType === 'admin' ? 'text-purple-700' : 'text-gray-500 hover:text-gray-700'
+                }`}
+            >
+              Admin Login
+            </button>
           </div>
 
-          <button
-            type="submit" // Specifies button type as submit
-            className="w-full mt-2 bg-purple-600 hover:bg-purple-700 transition text-white font-semibold py-3 rounded-lg shadow-sm"
-          >
-            Login
-          </button>
-        </form>
-
-        <div className="mt-4 text-sm text-gray-600">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-purple-600 hover:underline">
-            Sign Up
-          </Link>
-        </div>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+          <form onSubmit={handleLoginSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-gray-800 placeholder-gray-400"
+                required
+              />
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
 
-          <div className="mt-6 flex justify-center">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => {
-                toast.error("Google Login Failed");
-              }}
-            />
-          </div>
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <a href="#" className="text-xs font-medium text-purple-600 hover:text-purple-500">
+                  Forgot password?
+                </a>
+              </div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-gray-800 placeholder-gray-400"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-[0.98] mt-2"
+            >
+              Sign In
+            </button>
+          </form>
+
+          {loginType === 'user' && (
+            <div className="mt-8">
+              <div className="relative flex items-center mb-6">
+                <div className="flex-grow border-t border-gray-200"></div>
+                <span className="flex-shrink-0 mx-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Or continue with
+                </span>
+                <div className="flex-grow border-t border-gray-200"></div>
+              </div>
+
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={() => toast.error("Google Login Failed")}
+                  theme="outline"
+                  shape="rectangular"
+                  size="large"
+                />
+              </div>
+
+              <p className="mt-8 text-center text-sm text-gray-600">
+                Don't have an account?{" "}
+                <Link to="/signup" className="font-semibold text-purple-600 hover:text-purple-500 hover:underline transition-all">
+                  Sign up for free
+                </Link>
+              </p>
+            </div>
+          )}
+
+          {loginType === 'admin' && (
+            <p className="mt-8 text-center text-sm text-gray-500 bg-purple-50 rounded-lg py-3">
+              Authorized personnel only.
+            </p>
+          )}
+
         </div>
       </div>
     </div>

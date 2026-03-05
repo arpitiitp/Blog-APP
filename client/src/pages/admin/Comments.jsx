@@ -2,20 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { comments_data } from '../../assets/assets'
 import CommentTableItem from '../../components/admin/CommentTableItem'
 import { useAppContext } from '../../context/AppContext'
+import toast from "react-hot-toast";
 
 const Comments = () => {
   const [comments, setComments] = useState([])
   const [filter, setFilter] = useState('Not Approved')
-  const {axios}=useAppContext();
+  const { axios } = useAppContext();
 
   const fetchComments = async () => {
-  try {
-    const { data } = await axios.get('/api/admin/comments');
-    data.success ? setComments(data.comments) : toast.error(data.message);
-  } catch (error) {
-    toast.error(error.message);
-  }
-};
+    try {
+      const { data } = await axios.get('/api/admin/comments');
+      data.success ? setComments(data.comments) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   useEffect(() => {
     fetchComments()
   }, [])
@@ -27,18 +28,16 @@ const Comments = () => {
         <div className="flex gap-4">
           <button
             onClick={() => setFilter('Approved')}
-            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${
-              filter === 'Approved' ? 'text-primary' : 'text-gray-700'
-            }`}
+            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${filter === 'Approved' ? 'text-primary' : 'text-gray-700'
+              }`}
           >
             Approved
           </button>
 
           <button
             onClick={() => setFilter('Not Approved')}
-            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${
-              filter === 'Not Approved' ? 'text-primary' : 'text-gray-700'
-            }`}
+            className={`shadow-custom-sm border rounded-full px-4 py-1 cursor-pointer text-xs ${filter === 'Not Approved' ? 'text-primary' : 'text-gray-700'
+              }`}
           >
             Not Approved
           </button>

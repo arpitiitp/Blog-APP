@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import imagekit from "../configs/imageKit.js";
 import Blog from "../models/Blog.js";
 import Comment from "../models/Comment.js";
+import User from "../models/User.js";
 import main from '../configs/gemini.js'
 //ADD BLOG
 export const addBlog = async (req, res) => {
@@ -35,7 +36,7 @@ export const addBlog = async (req, res) => {
     });
 
     const image = optimizedImageUrl;
-    await Blog.create({
+    const blog = await Blog.create({
       title,
       subTitle,
       description,
@@ -44,6 +45,8 @@ export const addBlog = async (req, res) => {
       isPublished,
       author: req.userId
     });
+
+    await User.findByIdAndUpdate(req.userId, { $push: { blogs: blog._id } });
 
     res.json({ success: true, message: "Blog added successfully" });
   } catch (error) {
@@ -95,6 +98,10 @@ export const deleteBlogById = async (req, res) => {
     await Blog.findByIdAndDelete(id);
     // Delete all comments associated with the blog
     await Comment.deleteMany({ blog: id });
+    // Remove blog from User's blogs array
+    await User.updateMany({ blogs: id }, { $pull: { blogs: id } });
+    // Remove associated comments from Users' comments arrays
+    await User.updateMany({}, { $pull: { comments: { $in: await Comment.find({ blog: id }).distinct('_id') } } });
     res.json({ success: true, message: "Blog deleted successfully" });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -115,8 +122,13 @@ export const togglePublish = async (req, res) => {
 
 export const addComment = async (req, res) => {
   try {
-    const { blog, name, content } = req.body;
-    await Comment.create({ blog, name, content });
+    const { blog, content } = req.body;
+    const author = req.userId;
+    const comment = await Comment.create({ blog, author, content });
+
+    // Add comment to Blog and User
+    await Blog.findByIdAndUpdate(blog, { $push: { comments: comment._id } });
+    await User.findByIdAndUpdate(author, { $push: { comments: comment._id } });
     res.json({ success: true, message: "Comment added for review" });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -129,7 +141,7 @@ export const getBlogComments = async (req, res) => {
     const comments = await Comment.find({
       blog: blogId,
       isApproved: true,
-    }).sort({ createdAt: -1 });
+    }).populate('author', 'name image').sort({ createdAt: -1 });
     res.json({ success: true, comments });
   } catch (error) {
     res.json({ success: false, message: error.message });
