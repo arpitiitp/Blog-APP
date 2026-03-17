@@ -29,9 +29,7 @@ export const addBlog = async (req, res) => {
     const optimizedImageUrl = imagekit.url({
       path: response.filePath,
       transformation: [
-        { quality: "auto" }, // Auto compression
-        { format: "webp" }, // Convert to modern format
-        { width: "1280" }, // Width resizing
+        { quality: "auto", format: "webp", width: "1280" }
       ],
     });
 
