@@ -35,7 +35,7 @@ const Header = () => {
           write without filters. Whether it's one word or a thousand, your story
           starts right here.
         </p>
-        <form onSubmit={onSubmitHandler} className="flex justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
+        <form onSubmit={onSubmitHandler} className="flex justify-between w-full max-w-lg mx-auto border border-gray-300 bg-white rounded overflow-hidden">
           <input
             ref={inputRef}
             type="text"
